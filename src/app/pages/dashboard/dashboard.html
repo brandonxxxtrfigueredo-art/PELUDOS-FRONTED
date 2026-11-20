@@ -1,0 +1,211 @@
+<div class="min-h-screen bg-gray-50">
+  <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-3">
+      <span class="text-2xl">🐾</span>
+      <h1 class="text-2xl font-bold">PeludOS - Panel Principal</h1>
+    </div>
+    <button (click)="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer">
+      Cerrar Sesión
+    </button>
+  </nav>
+
+  <main class="max-w-7xl mx-auto p-6 space-y-8">
+    
+    <!-- REGISTRAR MASCOTA -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Registrar Nueva Mascota</h2>
+      <form (ngSubmit)="agregarMascota()" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase">Nombre</label>
+          <input [(ngModel)]="nuevaMascota.nombre" name="nombre" type="text" placeholder="Firulais" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm border-gray-300">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase">Especie</label>
+          <input [(ngModel)]="nuevaMascota.especie" name="especie" type="text" placeholder="Perro" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm border-gray-300">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase">Raza</label>
+          <input [(ngModel)]="nuevaMascota.raza" name="raza" type="text" placeholder="Labrador" class="mt-1 w-full px-3 py-2 border rounded-lg text-sm border-gray-300">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase">Edad (años)</label>
+          <input [(ngModel)]="nuevaMascota.edad" name="edad" type="number" min="0" class="mt-1 w-full px-3 py-2 border rounded-lg text-sm border-gray-300">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase">Peso (kg)</label>
+          <input [(ngModel)]="nuevaMascota.peso" name="peso" type="number" step="0.1" min="0" class="mt-1 w-full px-3 py-2 border rounded-lg text-sm border-gray-300">
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
+            + Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- TABLA DE MASCOTAS -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-gray-800">Mascotas Registradas</h2>
+        <button (click)="cargarMascotas()" class="text-sm text-blue-600 hover:underline">Actualizar</button>
+      </div>
+
+      @if (cargando) {
+        <div class="p-8 text-center text-gray-500">Cargando mascotas...</div>
+      } @else if (mascotas.length === 0) {
+        <div class="p-8 text-center text-gray-400">No hay mascotas registradas aún.</div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-50 text-xs font-semibold text-gray-500 uppercase border-b border-gray-100">
+                <th class="px-6 py-3">ID</th>
+                <th class="px-6 py-3">Nombre</th>
+                <th class="px-6 py-3">Especie</th>
+                <th class="px-6 py-3">Raza</th>
+                <th class="px-6 py-3">Edad</th>
+                <th class="px-6 py-3">Peso</th>
+                <th class="px-6 py-3 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-sm">
+              @for (m of mascotas; track ($index)) {
+                <tr class="hover:bg-gray-50 transition">
+                  <td class="px-6 py-4 font-mono text-gray-400">#{{ m.id || ($index + 1) }}</td>
+                  <td class="px-6 py-4 font-semibold text-gray-800">{{ m.nombre }}</td>
+                  <td class="px-6 py-4"><span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">{{ m.especie }}</span></td>
+                  <td class="px-6 py-4 text-gray-600">{{ m.raza }}</td>
+                  <td class="px-6 py-4 text-gray-600">{{ m.edad }} {{ m.edad === 1 ? 'año' : 'años' }}</td>
+                  <td class="px-6 py-4 text-gray-600">{{ m.peso }} kg</td>
+                  <td class="px-6 py-4 text-right space-x-3">
+                    <button (click)="abrirHistorial(m)" class="text-indigo-600 hover:text-indigo-800 font-medium text-xs">
+                      📋 Historial
+                    </button>
+                    <button (click)="borrarMascota(m.id)" class="text-red-500 hover:text-red-700 font-medium text-xs">
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <!-- SACAR CITA Y LISTA DE CITAS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Formulario Agendar Cita -->
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 lg:col-span-1 space-y-4">
+        <h2 class="text-xl font-bold text-gray-800">📅 Agendar Cita Médica</h2>
+        <form (ngSubmit)="agendarCita()" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase">Mascota</label>
+            <select [(ngModel)]="mascotaElegidaParaCita" name="mascotaElegidaParaCita" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm border-gray-300">
+              <option [ngValue]="null" disabled selected>Selecciona una mascota</option>
+              @for (m of mascotas; track ($index)) {
+                <option [ngValue]="m">{{ m.nombre }} ({{ m.especie }})</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase">Fecha y Hora</label>
+            <input [(ngModel)]="nuevaCita.fecha" name="fecha" type="datetime-local" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm border-gray-300">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase">Motivo</label>
+            <input [(ngModel)]="nuevaCita.motivo" name="motivo" type="text" placeholder="Vacunación / Control" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm border-gray-300">
+          </div>
+          <button type="button" (click)="agendarCita()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
+            Agendar Cita
+          </button>
+        </form>
+      </div>
+
+      <!-- Próximas Citas -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 lg:col-span-2 overflow-hidden flex flex-col justify-between">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-gray-800">🗓️ Próximas Citas</h2>
+          <button (click)="cargarCitas()" class="text-sm text-blue-600 hover:underline">Actualizar</button>
+        </div>
+        <div class="p-6 flex-grow">
+          @if (citas.length === 0) {
+            <div class="text-center text-gray-400 py-6">No hay citas agendadas.</div>
+          } @else {
+            <ul class="divide-y divide-gray-100">
+              @for (c of citas; track ($index)) {
+                <li class="py-3 flex justify-between items-center">
+                  <div>
+                    <p class="font-bold text-gray-800">{{ getNombreMascota(c.mascota_id) }}</p>
+                    <p class="text-xs text-gray-500">{{ c.motivo }}</p>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                      {{ c.fecha | date:'medium' }}
+                    </span>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL HISTORIAL CLÍNICO -->
+  @if (mascotaSeleccionada) {
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        
+        <div class="p-6 bg-blue-600 text-white flex justify-between items-center">
+          <div>
+            <h3 class="text-xl font-bold">Historial Clínico: {{ mascotaSeleccionada.nombre }}</h3>
+            <p class="text-xs text-blue-100">{{ mascotaSeleccionada.especie }} - {{ mascotaSeleccionada.raza }}</p>
+          </div>
+          <button (click)="cerrarHistorial()" class="text-white hover:bg-blue-700 p-2 rounded-lg text-lg font-bold">✕</button>
+        </div>
+
+        <div class="p-6 overflow-y-auto space-y-6 flex-grow">
+          <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+            <h4 class="font-bold text-sm text-gray-700">Nueva Entrada Médica</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input [(ngModel)]="nuevaConsulta.diagnostico" placeholder="Diagnóstico" class="px-3 py-2 border rounded-lg text-sm border-gray-300">
+              <input [(ngModel)]="nuevaConsulta.tratamiento" placeholder="Tratamiento / Receta" class="px-3 py-2 border rounded-lg text-sm border-gray-300">
+            </div>
+            <textarea [(ngModel)]="nuevaConsulta.observaciones" placeholder="Observaciones adicionales..." class="w-full px-3 py-2 border rounded-lg text-sm border-gray-300" rows="2"></textarea>
+            <button (click)="guardarConsulta()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 px-4 rounded-lg">
+              + Añadir al Historial
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <h4 class="font-bold text-sm text-gray-700">Consultas Anteriores</h4>
+            @if (historialConsultas.length === 0) {
+              <p class="text-xs text-gray-400">Sin historial registrado.</p>
+            } @else {
+              @for (h of historialConsultas; track ($index)) {
+                <div class="p-4 rounded-xl border border-gray-200 bg-white space-y-2">
+                  <div class="flex justify-between text-xs text-gray-400">
+                    <span>Consulta #{{ h.id }}</span>
+                    <span>{{ h.fecha | date:'short' }}</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-800"><strong>Diagnóstico:</strong> {{ h.diagnostico }}</p>
+                  <p class="text-sm text-gray-600"><strong>Tratamiento:</strong> {{ h.tratamiento }}</p>
+                  @if (h.observaciones) {
+                    <p class="text-xs text-gray-500 bg-gray-50 p-2 rounded"><strong>Obs:</strong> {{ h.observaciones }}</p>
+                  }
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

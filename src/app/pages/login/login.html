@@ -1,0 +1,42 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-6">
+    <div class="text-center">
+      <h1 class="text-3xl font-extrabold text-blue-600">PeludOS</h1>
+      <p class="text-gray-500 mt-1">Gestión Veterinaria</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Correo o Usuario</label>
+        <input 
+          type="text" 
+          [(ngModel)]="username" 
+          name="username" 
+          required 
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          placeholder="admin@peludos.com"
+        >
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input 
+          type="password" 
+          [(ngModel)]="password" 
+          name="password" 
+          required 
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+          placeholder="••••••••"
+        >
+      </div>
+
+      <button 
+        type="submit" 
+        [disabled]="loading"
+        class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition duration-200 cursor-pointer disabled:opacity-50"
+      >
+        {{ loading ? 'Autenticando...' : 'Iniciar Sesión' }}
+      </button>
+    </form>
+  </div>
+</div>
